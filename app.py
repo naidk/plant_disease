@@ -27,4 +27,4 @@ if st.button("Predict Sentiment"):
 
 # Footer
 st.markdown("---")
-st.markdown("Developed by Naidu 🔥 | CS 5710 Project")
+st.markdown("🔥 | CS 5710 Project")
