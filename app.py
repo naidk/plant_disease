@@ -1,34 +1,30 @@
 import streamlit as st
-import tensorflow as tf
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
-import numpy as np
-from PIL import Image
+import joblib
 
-# Load trained model
-model = load_model('crop_disease_model.h5')
+# Load the saved pipeline model
+model = joblib.load('positive-negative.pkl')
 
-# Set image size
-img_size = 128
+# Streamlit app setup
+st.set_page_config(page_title="Restaurant Review Sentiment", page_icon="🍽️")
 
-# Class labels (same order as in training)
-class_labels = ['Apple___Black_rot', 'Apple___healthy', 'Corn___Cercospora_leaf_spot', ...]  # Add all your classes here
+st.title("🍽️ Restaurant Review Sentiment Analysis")
+st.write("Enter a restaurant review below and predict if it's Positive or Negative!")
 
-st.title("🌿 Plant Disease Classifier")
-st.write("Upload a leaf image to detect the disease.")
+# Text input from user
+user_input = st.text_area("Write your review here:")
 
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+# Predict button
+if st.button("Predict Sentiment"):
+    if user_input.strip() == "":
+        st.warning("Please enter some text to predict.")
+    else:
+        prediction = model.predict([user_input])
 
-if uploaded_file:
-    img = Image.open(uploaded_file).convert('RGB')
-    st.image(img, caption="Uploaded Image", use_column_width=True)
+        if prediction[0] == 1:
+            st.success("✅ Positive Review!")
+        else:
+            st.error("❌ Negative Review!")
 
-    img = img.resize((img_size, img_size))
-    img_array = image.img_to_array(img) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
-
-    prediction = model.predict(img_array)
-    class_index = np.argmax(prediction)
-    class_label = class_labels[class_index]
-
-    st.success(f"🧠 Predicted Disease: **{class_label}**")
+# Footer
+st.markdown("---")
+st.markdown("Developed by Naidu 🔥 | CS 5710 Project")
